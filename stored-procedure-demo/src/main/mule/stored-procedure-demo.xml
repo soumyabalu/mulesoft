@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6201145b-1763-4309-9edb-e7e0ebfb8e0e" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="c7e4ab85-fcd0-41e1-ac22-d24fb6750ce6" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="admin" database="purchase_history" />
+	</db:config>
+	<flow name="stored-procedure-demoFlow" doc:id="e1cec96a-72da-4064-a82f-24c39dab3c53" >
+		<http:listener doc:name="Listener" doc:id="77b357c1-4585-4953-bb16-3e525b7a7f0d" config-ref="HTTP_Listener_config" path="/update"/>
+		<logger level="INFO" doc:name="Logger" doc:id="69ace3e1-c3bc-4b7e-b8af-449f4d52ff41" message="flow has started"/>
+		<db:stored-procedure doc:name="Stored procedure" doc:id="da6da2a1-9e75-4721-887e-33f1d8a435e5" />
+		<ee:transform doc:name="Transform Message" doc:id="4a9308e6-3b63-4435-a732-dea71120cb8f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="bb710a4c-446b-40dd-aab4-3db1c1f81b1f" />
+	</flow>
+</mule>

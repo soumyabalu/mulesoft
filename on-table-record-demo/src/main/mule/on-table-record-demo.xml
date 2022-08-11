@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="653a45ab-fb12-42bf-81b2-6132a2f77fdf" >
+		<db:my-sql-connection host="${mysql.host}" port="${mysql.port}" user="${mysql.user}" password="${secure::mysql.password}" database="${mysql.database}" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="bd58e5a0-01fe-443b-9e90-2cdc5e7b592f" file="config\configuration-dev.yaml" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="75866233-3568-48c4-99fc-dc2248b7c237" file="config\configuration-dev.yaml" key="test" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<flow name="on-table-record-demoFlow" doc:id="7138b431-7d60-4ff9-9336-d4033a380a33" >
+		<db:listener doc:name="On Table Row" doc:id="8bb083ef-a5de-4dd0-b2b5-596691e2dbcc" config-ref="Database_Config" table="products" watermarkColumn="prod_id" idColumn="prod_id">
+			<scheduling-strategy >
+				<fixed-frequency frequency="5" timeUnit="SECONDS"/>
+			</scheduling-strategy>
+		</db:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="81259467-fda5-4e86-b0d1-a3a818594e8e"/>
+	</flow>
+</mule>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<secure-properties:config name="Secure_Properties_Config1" doc:name="Secure Properties Config" doc:id="029b7e2d-7c34-4d4d-93fe-43a5a1b99ab9" file="config\configuration-dev.yaml" key="test" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="6e72152e-b2ea-4ed4-a6f4-a2e48f983564" file="config\configuration-dev.yaml" />
+	<flow name="select-statement-demoFlow" doc:id="af73d3ec-3938-458e-a592-17c5df524c37" >
+		<http:listener doc:name="Listener" doc:id="cad51940-4ea6-4a17-a33b-794c15cce047" config-ref="HTTP_Listener_config" path="/select-data"/>
+		<logger level="INFO" doc:name="Logger" doc:id="de6c7976-3102-4faf-ae34-3bddf90bc5f0" />
+		<db:select doc:name="Select" doc:id="f2c30d03-fc14-4d5c-981a-cdb5a6de0a23">
+			<db:sql ><![CDATA[select * from studentrecord]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="to get the db output datatype" doc:id="ba5950f5-c608-4c03-adf3-cfbb52e9e944" message="#[typeOf(payload)]"/>
+		<ee:transform doc:name="Transform Message" doc:id="3d2614a0-e00c-42cb-a459-eee872a79ec8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="3fa3ebfe-aa22-47fd-8d78-11457ec56d8d" />
+	</flow>
+</mule>

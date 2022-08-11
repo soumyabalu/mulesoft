@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	
+   <http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config1" doc:id="ceff322e-f695-494e-b7d6-9a8bbbe71516" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="ea52edea-77ad-4dac-905e-2fed6262feec" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<flow name="fruit-colour-demoFlow" doc:id="5183c0a6-ea63-44d7-b403-1a2994960ccd" >
+		<http:listener doc:name="Listener" doc:id="dcb34997-4606-4d7e-938e-8860a5124a73" config-ref="HTTP_Listener_config1" path="/fruit-name" allowedMethods="GET"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e4ed92a9-7465-4a22-9992-e57f2e4219e4" message="logger"/>
+		<set-variable value="#[attributes.queryParams.color]" doc:name="color" doc:id="cf046c0a-71b5-4526-8b89-97195ec46ef5" variableName="color"/>
+		<choice doc:name="Choice" doc:id="199ec6f0-8f8d-4dd5-af82-c2d7e485b2fd" >
+			<when expression="#[vars.color=='Red']">
+				<logger level="INFO" doc:name="Logger1" doc:id="136c27bc-b226-4b2b-8c7c-0ccce519e56f" message="logger1"/>
+				<set-payload value='"The fruit is apple"' doc:name="output1" doc:id="a604c352-32d9-426a-87d2-fdb23c68f6f9" />
+			</when>
+			<when expression="#[vars.color=='Purple']">
+				<logger level="INFO" doc:name="Logger2" doc:id="108a4667-0449-4596-ac28-a975b70d94de" message="logger1" />
+				<set-payload value='"The fruit is grapes"' doc:name="output2" doc:id="cf3e875e-e5ed-4185-842b-1e384aa25e04" />
+			
+</when>
+			<otherwise >
+				<set-payload value='"This is a veggie"' doc:name="Default" doc:id="246e7359-528a-4acc-a93e-ec7b4b1c2b6a" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="router output" doc:id="b667817d-4671-4b69-bde2-3cab94f5f5b4" message='"This is a  veggie"'/>
+			</flow>
+			
+			
+			<http:listener-config name="HTTP_Listener_config3" doc:name="HTTP Listener config3" doc:id="11311919-9be0-4993-a24a-b27dd3c2d60c" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="fruit-colour-ui-params-demoflow" doc:id="a1b86231-ddc2-4bde-b5e2-47f1edbab06d" >
+		<http:listener doc:name="Listener" doc:id="00476dba-31f3-4a73-a295-507cf666d27c" config-ref="HTTP_Listener_config3" path="/fruit-names/{Red}/{Purple}" allowedMethods="GET"/>
+		<logger level="INFO" doc:name="Logger" doc:id="7ba6a83d-a958-47db-83b6-39eab32f40f4" message="logger"/>
+		<set-variable value="#[attributes.uriParams.colour]" doc:name="color" doc:id="6477b792-6343-441d-9821-bf53f23e7621" variableName="color"/>
+		<choice doc:name="Choice" doc:id="4841360a-a8b2-4c09-b040-d4b6981e2a29" >
+			<when expression="#[vars.color=='Red']">
+				<logger level="INFO" doc:name="Logger1" doc:id="987baa39-30fc-4a49-a77d-06a0f39a0739" message="logger1"/>
+				<set-payload value='"The fruit is apple"' doc:name="output1" doc:id="eb81b79c-d903-46d2-8a67-4a4e86fcb99a" />
+			</when>
+			<when expression="#[vars.color=='Purple']">
+				<logger level="INFO" doc:name="Logger2" doc:id="0ea53661-2240-40c7-9e58-a52b9f4b88bd" message="logger1" />
+				<set-payload value='"The fruit is grapes"' doc:name="output2" doc:id="77cf8dc2-2ab7-44e1-bbbf-29a14e6133ed" />
+			
+</when>
+			<otherwise >
+				<set-payload value='"This is a veggie"' doc:name="Default" doc:id="6c67c281-6301-4af3-99fd-32b2574fb2cf" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="router output" doc:id="488ad0df-85a4-4808-b1ba-6ae35be377db" message='"This is a  veggie"'/>
+			</flow>
+</mule>

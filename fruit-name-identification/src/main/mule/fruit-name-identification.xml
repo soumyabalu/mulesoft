@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="05e0ecb3-b31d-477d-9576-6cb54456c5ef" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="fruit-name-identificationFlow" doc:id="6aba9d40-1b93-46c1-bcc9-7fb94be61ab4" >
+		<http:listener doc:name="Listener" doc:id="acb4c77b-83c0-45ee-ad5f-1192b0431143"  path="/colour" config-ref="HTTP_Listener_config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1ec74b90-cc39-43af-9db6-0574b95b7730" />
+		<set-variable value="#[attributes.queryParams.colour]" doc:name="input" doc:id="d925e150-8c02-4d0e-ac82-e03c4b72fcc8" variableName="colour"/>
+		<choice doc:name="Choice" doc:id="4baf14bc-ba9e-4589-9c14-e8dbeccd36d6" >
+			<when expression='#[vars.colour=="Red"]'>
+				<set-payload value='"The fruit is Apple"' doc:name="output1" doc:id="54099a3d-c938-485c-9213-f85540c58cf8" />
+				<logger level="INFO" doc:name="Logger1" doc:id="4975b402-8ae5-4714-91f5-8cea81aa8edd" message="logger1"/>
+			</when>
+			<when expression='#[vars.colour=="Yellow"]'>
+				<set-payload value='"The fruit is Banana"' doc:name="output2" doc:id="2b5023d5-b2c9-442c-ba27-6bdc81209230" />
+				<logger level="INFO" doc:name="Logger2" doc:id="c2c4f2be-d277-4f45-8dc6-6d1d88bfb1d0" message="logger2"/>
+			</when>
+			<otherwise >
+				<set-payload value='"This is a "vegetable."' doc:name="default" doc:id="4355824d-62bd-4685-a618-932bbb50a78c" />
+			</otherwise>
+			
+		</choice>
+		<logger level="INFO" doc:name="router output" doc:id="623d0df8-0498-4e64-a8e3-8587a31d9f82" />
+	</flow>
+	
+	
+	
+	<flow name="fruit-name-identification-uri-params-Flow" doc:id="cdbd1cca-2694-4312-9240-4c273ae40c16" >
+		<http:listener doc:name="Listener" doc:id="cf358137-a351-4970-a7c3-95ccbe2c3c6b"  path="/fruit-colour/{color}" config-ref="HTTP_Listener_config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b70e6f4d-ab6a-484c-b9a2-8dd960ff92b2" />
+		<set-variable value="#[attributes.uriParams.color]" doc:name="input" doc:id="68e86af0-74ce-410c-bd53-d18a224380df" variableName="colour"/>
+		<choice doc:name="Choice" doc:id="0cc1a945-d559-443b-b8aa-04ed1ae09253" >
+			<when expression='#[vars.colour=="Red"]'>
+				<set-payload value='"The fruit is Apple"' doc:name="output1" doc:id="6ef21324-b079-4a42-bb69-50be8afe1b72" />
+				<logger level="INFO" doc:name="Logger1" doc:id="66c553a1-ea63-4a24-8465-4f765563562f" message="logger1"/>
+			</when>
+			<when expression='#[vars.colour=="Yellow"]'>
+				<set-payload value='"The fruit is Banana"' doc:name="output2" doc:id="47d9b21b-54d7-4317-8a94-09c308c175f3" />
+				<logger level="INFO" doc:name="Logger2" doc:id="260a4f52-10f5-410c-ac18-799f6e788758" message="logger2"/>
+			</when>
+			<otherwise >
+				<set-payload value='"This is a "vegetable."' doc:name="default" doc:id="cb9b6110-bf2f-412b-bfcf-2d4606ce0e56" />
+			</otherwise>
+			
+		</choice>
+		<logger level="INFO" doc:name="router output" doc:id="d2ad225d-b44c-4a0d-80f4-e66d5d0bb74b" />
+	</flow>
+</mule>

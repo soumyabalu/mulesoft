@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="delete-data-demoFlow" doc:id="9a7d8258-304f-47a0-97a8-ae0c4bd15f07" >
+		<http:listener doc:name="Listener" doc:id="7ae9f197-75b5-477b-84b1-2ab7098001e4" config-ref="HTTP_Listener_config" path="/delete"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4a2804a7-4755-4735-b5b6-3caae7df71bf" />
+		<db:delete doc:name="Delete" doc:id="617bcd91-c6af-4b3d-9084-b1eaae7816ea" config-ref="Database_Config1">
+			<db:sql ><![CDATA[delete from studentrecord
+where rollnumber= :number]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{number: payload.rollnumber
+	
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="ed2a034e-5641-4c25-a47c-e3abc022d8fd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5a15605d-c89b-46ad-a7f8-b1bfcab8a2dc" />
+	</flow>
+</mule>

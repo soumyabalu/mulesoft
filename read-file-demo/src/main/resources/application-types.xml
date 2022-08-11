@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="inputCSVMetaData" format="csv">
+      <types:shape format="weave" example="examples/studentrecord.csv"><![CDATA[%dw 2.0
+
+type inputCSVMetaData = Array<{|  fname: String,   lname: String,   rollnumber: Number,   dob: Date,   gender: String,   address: String|}> {"isQuotedString": "false",
+"header": "true",
+"headerLineNumber": "0"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="outputCSVMetaData" format="json">
+      <types:shape format="weave" example="examples/output.json"><![CDATA[%dw 2.0
+
+type outputCSVMetaData = Array<{|  fname: String,   lname: String,   rollnumber: Number {"typeId": "int"},   dob: String,   gender: String,   address: String|}> {"example": "[{\\\"fname\\\":\\\"Rahana\\\",\\\"lname\\\":\\\"Jeevan\\\",\\\"rollnumber\\\":31,\\\"dob\\\":\\\"1-4-23\\\",\\\"gender\\\":\\\"F\\\",\\\"address\\\":\\\"Kasargod\\\"},{\\\"fname\\\":\\\"Rahana\\\",\\\"lname\\\":\\\"Jeevan\\\",\\\"rollnumber\\\":31,\\\"dob\\\":\\\"1-4-23\\\",\\\"gender\\\":\\\"F\\\",\\\"address\\\":\\\"Kasargod\\\"},{\\\"fname\\\":\\\"Rahana\\\",\\\"lname\\\":\\\"Jeevan\\\",\\\"rollnumber\\\":31,\\\"dob\\\":\\\"1-4-23\\\",\\\"gender\\\":\\\"F\\\",\\\"address\\\":\\\"Kasargod\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#63327221-2935-454b-9540-6db0f7c4bc18">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="inputCSVMetaData"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="outputCSVMetaData"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

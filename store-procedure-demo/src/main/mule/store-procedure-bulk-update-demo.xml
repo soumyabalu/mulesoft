@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="store-procedure-bulk-update-demoFlow" doc:id="b8fcdcd1-b56c-4e38-87cb-068fac59790f" >
+		<http:listener doc:name="Listener" doc:id="6726bd3c-4405-4042-8c67-66d89a0f5918" config-ref="HTTP_Listener_config" path="/update-values"/>
+		<db:stored-procedure doc:name="Stored procedure" doc:id="34a1ef92-4fd1-4757-baa7-3549a9e92232" config-ref="Database_Config">
+			<db:sql ><![CDATA[call adding_prod_price_orders_prod_id(:id, :rise)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+		</db:stored-procedure>
+		<ee:transform doc:name="Transform Message" doc:id="a79f300e-3c75-4a42-b53b-11628e94283f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="6daf8aae-8c26-4700-94e4-3b6a72ae6554" message="#[payload]"/>
+	</flow>
+</mule>

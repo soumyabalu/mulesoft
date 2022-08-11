@@ -1,0 +1,14 @@
+[
+ {
+   "prod_id": 8, 
+   "prod_name": "abc", 
+   "prod_price": "123", 
+   "prod_sku": "ABC123"
+},
+{
+   "prod_id": 8, 
+   "prod_name": "abc", 
+   "prod_price": "123", 
+   "prod_sku": "ABC123"
+}
+]   

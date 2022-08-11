@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="af4e4925-052d-492c-bd2e-adc5719a6300" basePath="message-language" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<flow name="greeting-language-demoFlow" doc:id="df9365b8-6ac9-4ab7-8563-1ae87065ce70" >
+		<http:listener doc:name="Listener" doc:id="cbb645b6-fb61-499b-bd2d-0cb3b83c9d07" config-ref="HTTP_Listener_config" path="/greeting"/>
+		<logger level="INFO" doc:name="Logger" doc:id="bb442f02-727d-409f-b974-b5d03c88d82b" />
+		<set-variable value="#[attributes.queryParams.language]" doc:name="language" doc:id="553acb35-4771-4020-9dad-fa545f13db9d" variableName="language"/>
+		<choice doc:name="Choice" doc:id="ca559c57-e48c-46d4-baec-17f71bc415e4" >
+			<when expression="#[vars.language=='Spanish']">
+				<logger level="INFO" doc:name="Logger1" doc:id="7a7c857c-587f-422d-ace0-8105c83b682f" message="logger1"/>
+				<set-payload value='"Hola"' doc:name="output1" doc:id="ca15d6f0-9315-4fa7-a791-6090337d7728" />
+			</when>
+			<when expression="#[vars.language=='French']">
+				<logger level="INFO" doc:name="Logger2" doc:id="9442b01b-57b6-4e13-be35-f53160a09f71" message="logger2"/>
+				<set-payload value='"Bonjour"' doc:name="output1" doc:id="8ce484a9-2595-443f-809a-129ce40bc0b2" />
+			</when>
+			<otherwise >
+				<set-payload value='"I am fine"' doc:name="Default" doc:id="f37a52b0-0cd3-4716-909b-3266b68db10c" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="router output" doc:id="ffca9d0a-0c82-4052-841d-4b5a8c277e00" />
+	</flow>
+	
+	<flow name="greeting-language-uri-params-demoFlow" doc:id="2a3a30a4-fae4-43d2-9140-010fa74dba30" >
+		<http:listener doc:name="Listener" doc:id="3cd9f1bc-4b7f-4206-a37a-6fe5f75615f1" config-ref="HTTP_Listener_config" path="/greeting-message/{language}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b2df57ef-6f43-4940-8074-e6979f19a99b" />
+		<set-variable value="#[attributes.uriParams.language]" doc:name="language" doc:id="537c3015-4df2-43e6-8619-e2d718a29125" variableName="language"/>
+		<choice doc:name="Choice" doc:id="8faa9a4d-1058-4402-b62a-eede0529407f" >
+			<when expression="#[vars.language=='Spanish']">
+				<logger level="INFO" doc:name="Logger1" doc:id="bf25375b-a9ee-4178-a81a-21afc6c4bb18" message="logger1"/>
+				<set-payload value='"Hola"' doc:name="output1" doc:id="e88e28c1-c987-4548-8518-b2bcad07c398" />
+			</when>
+			<when expression="#[vars.language=='French']">
+				<logger level="INFO" doc:name="Logger2" doc:id="43021692-2b7a-4d8c-9bdb-9885ce89f838" message="logger2"/>
+				<set-payload value='"Bonjour"' doc:name="output1" doc:id="865b33ce-87a8-4604-84ab-a5a702adc735" />
+			</when>
+			<otherwise >
+				<set-payload value='"I am fine"' doc:name="Default" doc:id="af243c57-0e18-4116-8d47-18ae0c475697" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="router output" doc:id="bdaa35f3-bf3b-41ed-beb8-03e748626c2b" />
+	</flow>
+</mule>

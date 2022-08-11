@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="inputCSVMetaData" format="csv">
+      <types:shape format="weave"><![CDATA[%dw 2.0
+
+type inputCSVMetaData = Array<{|  prod_id: Number,   prod_name: String,   prod_price: Number,   prod_sku: String|}> {"isQuotedString": "false",
+"header": "true",
+"headerLineNumber": "0"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="outputCSVMetaData" format="json">
+      <types:shape format="weave" example="examples/outbound.json"><![CDATA[%dw 2.0
+
+type outputCSVMetaData = Array<{|  prod_id: Number {"typeId": "int"},   prod_name: String,   prod_price: String,   prod_sku: String|}> {"example": "[{\\\"prod_id\\\":8,\\\"prod_name\\\":\\\"abc\\\",\\\"prod_price\\\":\\\"123\\\",\\\"prod_sku\\\":\\\"ABC123\\\"},{\\\"prod_id\\\":8,\\\"prod_name\\\":\\\"abc\\\",\\\"prod_price\\\":\\\"123\\\",\\\"prod_sku\\\":\\\"ABC123\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#46c5f075-a9ff-4c85-9481-96843d48a578">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="inputCSVMetaData"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="outputCSVMetaData"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

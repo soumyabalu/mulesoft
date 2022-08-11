@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="update-data-demoFlow" doc:id="edec5892-954e-47cb-ad03-bec4a926bd47" >
+		<http:listener doc:name="Listener" doc:id="fb91e4fb-555a-4bac-8234-6335d84a375a" config-ref="HTTP_Listener_config" path="/update"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0785e7d9-eff0-4036-b452-d0f017702b5e" />
+		<db:update doc:name="Update" doc:id="b2c030f8-01f7-40a1-a32d-ea795ad121d7" config-ref="Database_Config1">
+			<db:sql ><![CDATA[update studentrecord set
+lname= :name where rollnumber= :number]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{name: payload.lname,
+number: payload.rollnumber}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="2ff2a634-7821-4738-8fc9-5210f853e5c2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a8f0a4b6-4560-4f38-a8b2-6f0187b022c9" />
+	</flow>
+</mule>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="54178cf4-fb11-49eb-9e8e-e126e21bec46" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="greeting-messageFlow" doc:id="93031bab-e9bf-4deb-8372-0720409a5cce" >
+		<http:listener doc:name="Listener" doc:id="2be28c5a-be4b-4576-bdcd-d7c19ea21b07" config-ref="HTTP_Listener_config" path="/test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2e3df057-3e43-4ac4-a45a-a7283be8bbfd" />
+		<set-payload value='"Hi all .......Good morning"' doc:name="Over writting the original input message with the target system expected message" doc:id="55b56cf7-4141-4fb9-9b55-efaa57e428e6" />
+		<logger level="INFO" doc:name="output" doc:id="d6874c65-d3d0-432b-a6aa-c150a0cb9b18" message="#[payload]"/>
+	</flow>
+</mule>

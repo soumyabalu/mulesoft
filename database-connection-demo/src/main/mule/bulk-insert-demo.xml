@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="721d40ca-615a-4ce8-81fe-304a36cbba66" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="admin" database="studentdata" />
+	</db:config>
+	<flow name="bulk-insert-demoFlow" doc:id="b522d800-8785-422a-a903-9db6f40cd8b3" >
+		<http:listener doc:name="Listener" doc:id="0ab34934-0791-4528-8772-29f42dec7b31" config-ref="HTTP_Listener_config" path="/bulk-insert"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d0793763-568c-41c2-8a7d-886ee1156970" />
+		<db:bulk-insert doc:name="Bulk insert" doc:id="caf6eb63-50da-4ebb-8dc1-3f3e259e09ee" config-ref="Database_Config1">
+			<db:sql ><![CDATA[insert into studentrecord(fname, lname, rollnumber, dob, gender, address) values(:fname, :lname, :rollnumber, :dob, :gender, :address
+)]]></db:sql>
+		</db:bulk-insert>
+		<ee:transform doc:name="Transform Message" doc:id="d5697a08-ae72-40b0-8739-d6b124c89dde" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="8fb59c66-dbfb-4f7b-9536-494eaef34a38" />
+	</flow>
+</mule>
