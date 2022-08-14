@@ -7,9 +7,9 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="delete-data-demoFlow" doc:id="9a7d8258-304f-47a0-97a8-ae0c4bd15f07" >
-		<http:listener doc:name="Listener" doc:id="7ae9f197-75b5-477b-84b1-2ab7098001e4" config-ref="HTTP_Listener_config" path="/delete"/>
+		<http:listener doc:name="Listener" doc:id="7ae9f197-75b5-477b-84b1-2ab7098001e4" path="/delete" config-ref="HTTP_Listener_config"/>
 		<logger level="INFO" doc:name="Logger" doc:id="4a2804a7-4755-4735-b5b6-3caae7df71bf" />
-		<db:delete doc:name="Delete" doc:id="617bcd91-c6af-4b3d-9084-b1eaae7816ea" config-ref="Database_Config1">
+		<db:delete doc:name="Delete" doc:id="617bcd91-c6af-4b3d-9084-b1eaae7816ea" config-ref="Database_Config">
 			<db:sql ><![CDATA[delete from studentrecord
 where rollnumber= :number]]></db:sql>
 			<db:input-parameters ><![CDATA[#[{number: payload.rollnumber

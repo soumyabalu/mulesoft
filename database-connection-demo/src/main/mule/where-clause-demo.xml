@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
 	<flow name="where-clause-demoFlow" doc:id="400f4d6b-996a-4139-90e7-fa0af42c3bc3" >
-		<http:listener doc:name="Listener" doc:id="9dfebcf4-eeb1-40da-97a7-8b11d8a743a6" config-ref="HTTP_Listener_config" path="/fetch-data"/>
+		<http:listener doc:name="Listener" doc:id="9dfebcf4-eeb1-40da-97a7-8b11d8a743a6" path="/fetch-data"/>
 		<logger level="INFO" doc:name="Logger" doc:id="1d734c7d-bb40-4c16-84a2-b9dca00114ad" />
-		<db:select doc:name="Select" doc:id="1e4e773f-0ca5-4105-865c-750bba0f9740" config-ref="Database_Config1">
-			<db:sql ><![CDATA[select * from studentrecord where rollnumber=:number]]></db:sql>
+		<db:select doc:name="Select" doc:id="1e4e773f-0ca5-4105-865c-750bba0f9740" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from studentrecord where rollnumber= :number]]></db:sql>
 			<db:input-parameters ><![CDATA[#[number: attributes.queryParams.rollnumber]]]></db:input-parameters>
 		</db:select>
 		<logger level="INFO" doc:name="Logger" doc:id="05441615-a81e-4c7d-8e65-3fc54889cd05" />

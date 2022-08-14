@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="05aeb8af-5422-44bc-ba9a-4e1bbb00884f" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="scatter-gather-router-demo1Flow" doc:id="6838424c-ff35-4b3e-ba82-da8a153aa8ad" >
+		<http:listener doc:name="Listener" doc:id="50ef7440-04be-4f86-aada-92ff230eafc5" config-ref="HTTP_Listener_config" path="scatter-gather-process"/>
+		<logger level="INFO" doc:name="Logger" doc:id="01e34679-034b-4323-878b-57075ada9d4b" message="Received the request and the flow has started."/>
+		<set-variable value="#[payload]" doc:name="input variable" doc:id="6abc903a-c949-45cd-a97a-8ec06202b511" variableName="message"/>
+		<set-payload value="This is the input poayload." doc:name="input " doc:id="638c0716-7df8-469d-8cba-f70958ae0436" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="844376af-897e-40eb-9588-9993249d090b" >
+			<route >
+				<logger level="INFO" doc:name="r1" doc:id="2185b812-b805-4af0-bc2a-198dab404ec5" message="frst router flow has staretd"/>
+				<set-variable value="#[payload]" doc:name="router1 variable" doc:id="8305267d-cc78-410a-a9d7-b840e5adc7e8" variableName="message"/>
+				<set-payload value="This is the output of router1." doc:name="r1 output" doc:id="c7eaae0c-9943-417b-a85d-fbfa64f22a03" />
+			</route>
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="6155751f-818b-474a-a0a7-27cecfcc0a27" message="Second router flow has started"/>
+				<set-variable value="#[payload]" doc:name="router2 variable" doc:id="0465dbe3-9d39-40e2-9f2e-503180c1b3ac" variableName="message"/>
+				<set-payload doc:name="r2 output" doc:id="72765ae1-f55f-4d11-a4e6-591fce0de815" value="This is the output of router2"/>
+			</route>
+		</scatter-gather>
+		<logger level="INFO" doc:name="Logger" doc:id="6533494d-564a-43c5-8653-31790dea1c83" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="1b2a38b9-9ef5-4079-9041-cb82ab9468b6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"aggregating": vars.message ++ vars.message ++ vars.message
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="6faecc2b-6763-43cc-a03e-9b591e24e3f1" message="#[payload]"/>
+	</flow>
+</mule>

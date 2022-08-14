@@ -3,4 +3,4 @@ mysql:
   port: "3306"
   user: "root"
   password: "![Q26aG+zcBkE=]"
-  database: "studentdata"
+  database: "purchase_history"

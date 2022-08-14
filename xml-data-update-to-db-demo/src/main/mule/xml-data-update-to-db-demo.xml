@@ -7,23 +7,27 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f85430ef-4d35-4f01-9b23-b1b2ddd7b05a" >
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="13a6120d-1a01-45e6-a355-350f0a98c2df" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
-	<db:config name="Database_Config" doc:name="Database Config" doc:id="5dc850e2-ffea-43c3-89ac-bd47478a6a44" >
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="84cb8a92-d861-4d4a-b6bc-eefd72424d82" >
 		<db:my-sql-connection host="${mysql.host}" port="${mysql.port}" user="${mysql.user}" password="${secure::mysql.password}" database="${mysql.database}" />
 	</db:config>
-	<configuration-properties doc:name="Configuration properties" doc:id="db9e023a-f937-4ee2-adf3-bcba093c7954" file="config\configuration-dev.yaml"/>
-	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="aa314c25-6b65-4cf5-9a5d-56473d15f8d9" file="config\configuration-dev.yaml" key="test" >
+	<configuration-properties doc:name="Configuration properties" doc:id="11f1ba06-4945-4d33-86ee-140ac9db1c63" file="config\configuration-dev.yaml" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="1422e53d-6dbc-4ad1-b3f1-073b68c3a5ff" file="config\configuration-dev.yaml" key="test" >
 		<secure-properties:encrypt algorithm="Blowfish" />
 	</secure-properties:config>
-	<flow name="database-connection-demoFlow" doc:id="63b2618d-04e3-45fe-bd39-99945746ae31" >
-		<logger level="INFO" doc:name="Logger" doc:id="99700517-8720-4e10-af53-b101c18ca75f" />
-		<db:insert doc:name="Insert" doc:id="bbcec1b1-8d36-484b-a08e-c21c0e26d3f1" autoGenerateKeys="true" config-ref="Database_Config">
-			<db:sql ><![CDATA[insert into studentrecord (fname, lname, rollnumber, dob, gender, address)values(:fname, :lname, :rollnumber, :dob, :gender ,:address)]]></db:sql>
-			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
-		</db:insert>
-		<ee:transform doc:name="Transform Message" doc:id="f2551324-c2b6-4aab-948e-7fc9b77e7f48" >
+	<flow name="xml-data-update-to-db-demoFlow" doc:id="ec586f9d-0dc0-4872-80b4-ab5ba68e58bf" >
+		<http:listener doc:name="Listener" doc:id="461379ac-7fc1-4d92-81e3-bc740bb8e088" config-ref="HTTP_Listener_config" path="/update-value"/>
+		<logger level="INFO" doc:name="input" doc:id="9cdeee87-690a-456d-88e6-70e00019ddcb" message="the flow has started"/>
+		<db:update doc:name="Update" doc:id="ed7815f0-f035-489e-8554-dc33984c6638" config-ref="Database_Config">
+			<db:sql ><![CDATA[update products set prod_price= :price where prod_id= :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	price: payload.products.prod_price,
+	id: payload.products.prod_id
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="4505c1ae-ba88-4f14-aebb-53cc4e28897f" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -32,6 +36,6 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="c015ba0a-9957-4c9a-9bb9-486278ea44a7" message="#[payload]"/>
+		<logger level="INFO" doc:name="output" doc:id="e5676219-76fd-4208-a73e-129fcb8f5493" message="The flow has ended"/>
 	</flow>
 </mule>

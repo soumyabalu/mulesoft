@@ -7,14 +7,13 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
-	<secure-properties:config name="Secure_Properties_Config1" doc:name="Secure Properties Config" doc:id="029b7e2d-7c34-4d4d-93fe-43a5a1b99ab9" file="config\configuration-dev.yaml" key="test" >
-		<secure-properties:encrypt algorithm="Blowfish" />
-	</secure-properties:config>
-	<configuration-properties doc:name="Configuration properties" doc:id="6e72152e-b2ea-4ed4-a6f4-a2e48f983564" file="config\configuration-dev.yaml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="ec39ecfc-b738-49d3-92e2-d6f163be3734" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
 	<flow name="select-statement-demoFlow" doc:id="af73d3ec-3938-458e-a592-17c5df524c37" >
-		<http:listener doc:name="Listener" doc:id="cad51940-4ea6-4a17-a33b-794c15cce047" config-ref="HTTP_Listener_config" path="/select-data"/>
+		<http:listener doc:name="Listener" doc:id="cad51940-4ea6-4a17-a33b-794c15cce047" path="/select-data" config-ref="HTTP_Listener_config"/>
 		<logger level="INFO" doc:name="Logger" doc:id="de6c7976-3102-4faf-ae34-3bddf90bc5f0" />
-		<db:select doc:name="Select" doc:id="f2c30d03-fc14-4d5c-981a-cdb5a6de0a23">
+		<db:select doc:name="Select" doc:id="f2c30d03-fc14-4d5c-981a-cdb5a6de0a23" config-ref="Database_Config">
 			<db:sql ><![CDATA[select * from studentrecord]]></db:sql>
 		</db:select>
 		<logger level="INFO" doc:name="to get the db output datatype" doc:id="ba5950f5-c608-4c03-adf3-cfbb52e9e944" message="#[typeOf(payload)]"/>
