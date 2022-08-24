@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0a7c73c3-9060-4d00-abcc-bbba753bbc8e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="demo-flow1" doc:id="fc974d06-74a4-4431-8c77-92cd7858e8de" >
+		<http:listener doc:name="Listener" doc:id="f0bef355-cbf2-41a2-9a02-687c90019932" config-ref="HTTP_Listener_config" path="/flow-test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ce115faa-a9b6-4266-b616-84d6f1ce7db6" message="The flow 1 has started"/>
+		<set-variable value="I am the demo variable " doc:name="Set Variable" doc:id="8d8fa409-8228-4285-b802-8666847b917a" variableName="demoveriable"/>
+		<flow-ref doc:name="Flow Reference" doc:id="fbde68dc-9354-4981-8710-5617b9895328" name="demoFlow2"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6bada7c4-7a5b-4ca3-9183-78076cda16d1" message="#[vars.demoveriable]" category="The flow has ended"/>
+	</flow>
+	<flow name="demoFlow2" doc:id="04d7e124-b22f-454a-8013-c5b764cc442e" >
+		<http:listener doc:name="Listener" doc:id="0710f745-9055-47e0-bee3-b3b87d29a095" config-ref="HTTP_Listener_config" path="/test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="abcdc8d0-0ea5-471e-a959-91726c2458ec" message="#[vars.demovariable]" category="This flow 2 has triggered"/>
+		<set-variable value="I am the demo flow 2 variable" doc:name="variable2" doc:id="e769662f-8a13-4a88-b254-76056616bcf7" variableName="demovar"/>
+	</flow>
+</mule>

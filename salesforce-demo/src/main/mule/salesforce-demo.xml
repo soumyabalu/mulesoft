@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3a3fda39-6c4f-4527-b90b-398c4e533a38" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="6cb2667b-7477-48b6-8884-de66b8453f7c" >
+		<salesforce:basic-connection username="mylearningsalesforce@gmail.com" password="WallBlue7" securityToken="sNfK5HPuxC2qWly3CAVqkKcY" url="https://login.salesforce.com/services/Soap/u/55.0" />
+	</salesforce:sfdc-config>
+	<flow name="salesforce-demoFlow" doc:id="25c7901e-b290-4fea-85d1-b76c3446b477" >
+		<http:listener doc:name="Listener" doc:id="c04a9694-df43-4f05-b9a8-c513d1a01562" config-ref="HTTP_Listener_config" path="/test-demo"/>
+		<logger level="INFO" doc:name="Logger" doc:id="82e2be98-dcb7-4af7-b4ca-42654efd24f5" message="Request came and the flow has started"/>
+		<salesforce:create doc:name="Create" doc:id="1749474d-f32a-4f26-8925-b3b4e706bb12" config-ref="Salesforce_Config" type="Account"/>
+		<ee:transform doc:name="Transform Message" doc:id="227582bd-b4d0-4aff-abd6-c22ab6b49ed6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json  skipNullOn="everywhere"
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="salesforce-demoFlow1" doc:id="afcff5e0-3507-49f3-8d29-5a1b7c197ba6" >
+		<http:listener doc:name="Listener" doc:id="9305a260-b843-4f85-94a3-7696ad5ca548" config-ref="HTTP_Listener_config" path="/fetch-data"/>
+		<logger level="INFO" doc:name="Logger" doc:id="011e016e-8eb4-44eb-a762-9f9d9818346d" message="Request has arrived and the flow has started"/>
+		<salesforce:query doc:name="Query" doc:id="455cd3b3-c0c8-40ac-9a19-023b56c884c9" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[select name, phone, website from Account ]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="76afe1f6-02b1-4006-be33-04dddbdeb49d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json  skipNullOn="everywhere"
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="d8947e24-32f8-49da-8d85-496547a45f37" message="#[payload]"/>
+	</flow>
+	<flow name="salesforce-demoFlow2" doc:id="751bb97a-5425-4914-985f-aeda183472e5" >
+		<http:listener doc:name="Listener" doc:id="559b3461-1fa9-454b-a728-8d633efd98d6" config-ref="HTTP_Listener_config" path="/select-one-record"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e1a9267b-c203-4e40-aaf7-7d4cc52cdbcb" />
+		<salesforce:query doc:name="Query" doc:id="8cdcd487-663c-4ac8-8caa-fc7575dc5959" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT AccountNumber,BillingAddress,Id,Name FROM Account WHERE Name = ':name']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	name : payload.Name
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="5ccc3558-564f-4833-8b18-88697b810196" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="02e05af2-4e48-42f6-88ac-9777c2925eac" message="#[payload]"/>
+	</flow>
+</mule>

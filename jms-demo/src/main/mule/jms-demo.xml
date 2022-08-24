@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="2c015c9a-246b-4418-ba54-9121c5bb4bed" >
+		<jms:active-mq-connection >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<flow name="jms-demoFlow" doc:id="e541e8fd-69a5-49db-8a96-c1700b7a9570" >
+		<jms:listener doc:name="On New Message" doc:id="89731e78-a18e-43ed-bc3a-ca37bdf65599" config-ref="JMS_Config" destination="testqueue">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="09d3484d-fdab-46d3-a767-bc6088e6aba1" message="The flow has started"/>
+		<file:write doc:name="Write" doc:id="588072e6-1c28-4b60-b534-6f2f44adb228" path="C:\Users\soumya balu\OneDrive\Desktop\pastejms.json"/>
+	</flow>
+</mule>

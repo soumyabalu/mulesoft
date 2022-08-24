@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="48e1a4e9-b581-49cc-8be1-1ab6730e53d9" >
+		<http:request-connection host="localhost" port="8091" protocol="HTTPS">
+			<tls:context >
+				<tls:trust-store path="truststore.ts" password="WallBlue7" type="jks" />
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="5c39ab34-5dbc-44e1-85ad-3b6662119e03" >
+		<http:listener-connection host="0.0.0.0" port="8091" protocol="HTTPS">
+			<tls:context >
+				<tls:key-store type="jks" path="keystore.jks" alias="muleesb" keyPassword="WallBlue7" password="WallBlue7" />
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+	<flow name="client-side-request-demoFlow" doc:id="ba7484e4-6838-484e-a9f9-308971b2559f" >
+		<http:listener doc:name="Listener" doc:id="f40c9f26-4615-4fcb-972d-1f9ccc276ad9" config-ref="HTTP_Listener_config" path="/test"/>
+		<logger level="INFO" doc:name="Logger1" doc:id="e7b4ec4a-9b93-4565-a64a-adbc1885e165" message="The http request has arrived and the flow has started"/>
+		<set-variable value="I am the client variable" doc:name="Set Variable" doc:id="b6300f2b-ce49-49ed-8678-f5ee7fc49786" variableName="clientvariable"/>
+		<http:request method="POST" doc:name="Request" doc:id="43b0d74a-adfe-4551-83b6-cd11002e2fa3" config-ref="HTTP_Request_configuration" path="/test-server">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	testclientvariable : vars.clientvariable
+}]]]></http:query-params>
+		</http:request>
+		<os:retrieve doc:name="Retrieve" doc:id="cbcb92a3-b39a-4a22-b704-9a6876d79497" key="testservervariable">
+		</os:retrieve>
+		<logger level="INFO" doc:name="server response" doc:id="0e1feed5-8718-461b-94df-e46a7334a34c" category="This the server side  response logger" message="#[vars.clientvariable]" />
+	</flow>
+	<flow name="server-side-request-demoFlow" doc:id="148e575a-473a-4c79-9160-a6b1e05665d9" >
+		<http:listener doc:name="Listener" doc:id="dfd309c0-2961-4e34-82b5-ae2a11ebf3da" config-ref="HTTP_Listener_config1" path="/test-server"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e789ed9f-516d-47e7-bf77-19e2ff748c9f" message="#[attributes.queryParams.testclientvariable]" category="This is the server side logger"/>
+		<set-variable value="I am the servervariable " doc:name="svariable" doc:id="2c9d2d5a-6cd0-4d04-9593-2a37741b1fed" variableName="servervariable"/>
+		<os:store doc:name="Store" doc:id="36bcf7a0-c6a4-4c14-8e24-0ec71a1823b1" key="testservervariable">
+			<os:value ><![CDATA[#[vars.servervariable]]]></os:value>
+		</os:store>
+		<logger level="INFO" doc:name="Logger" doc:id="935f20ea-996f-4758-9d8a-c1b3fc410626" message="#[vars.servervariable]" category="displaying the server variable " />
+	</flow>
+</mule>

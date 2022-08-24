@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cdc3ccba-b1db-4fea-8ca8-590bda37e4c3" >
+		<http:listener-connection host="${secure::http.host}" port="${http.port}" />
+	</http:listener-config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="fbec729a-56cf-4203-82b2-c05f6e611af6" file="${env}.yaml" key="${enc.key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="ff7c5432-5b1a-411b-9a71-0711844f47de" file="${env}.yaml" />
+	<flow name="testFlow" doc:id="8976ccd2-a572-4d92-ba8d-c0537ffba5e1" >
+		<http:listener doc:name="Listener" doc:id="69af078a-8a30-44ee-a4e5-70bf7e6d89b6" config-ref="HTTP_Listener_config" path="/testing"/>
+		<logger level="INFO" doc:name="Logger" doc:id="caeee0fe-5f36-4c44-8388-5fd8a1ee93ee" message="I am the output"/>
+	</flow>
+</mule>
