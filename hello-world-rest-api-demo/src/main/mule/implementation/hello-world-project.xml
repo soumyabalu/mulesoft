@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="hello-world-projectFlow" doc:id="acffdbea-079f-4345-b973-bf7cef0d9d74" >
+		<set-payload value='"Hello World"' doc:name="Set Payload" doc:id="b088c181-5d3f-4b4c-acf5-4ab685b7d9cd" />
+		<logger level="INFO" doc:name="Logger" doc:id="77dcd771-66a1-471f-a4d0-e0c29323257a" message="#[payload]" category="end logg"/>
+	</flow>
+</mule>

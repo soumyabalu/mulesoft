@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="3a80aefe-dcb9-4020-be09-59cefd78cb70" >
+		<db:my-sql-connection host="${secure::mysql.host}" port="${secure::mysql.port}" user="${secure::mysql.user}" password="${secure::mysql.password}" database="${secure::mysql.database}" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="e8ec15fa-e9f4-426a-8c60-1dab3f4aaa85" file="config\dev.properties" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="e6d4672c-e716-41a3-917a-91589057ce54" file="config\dev.properties" key="test" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<flow name="insert-employee-Flow" doc:id="ce81e8c1-c33e-4fcf-aeb0-dc44457d3d21" >
+		<db:insert doc:name="Insert" doc:id="c9721d37-52d6-4802-9e3c-6b2c45b277cb" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into employee_profile(emp_name, emp_id, emp_skills) values(:name, :id, :skills)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	name: payload.emp_name,
+	id: payload.emp_id,
+	skills: payload.emp_skills
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="3b2384e9-42d5-47f3-9160-2d98222da34f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  Status: 200,
+  Message: "Success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5931d5d8-0310-483e-b02a-c59c397ca3fb" message="#[payload]"/>
+	</flow>
+	<flow name="fetch-all-employees" doc:id="b936db29-c9d1-4a26-8266-84b7e48e4f36" >
+		<db:select doc:name="Select" doc:id="d3795415-89b3-41a5-a5e1-8120644e8d19" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from employee_profile]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="676d0eac-fd79-48c0-b5a3-bb77739f5334" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="b301a093-9f3e-4b0d-901a-874da45f3d14" message="#[payload]"/>
+	</flow>
+	<flow name="delete-employee" doc:id="78c106d5-408b-4261-8bb6-428d89afb207" >
+		<db:delete doc:name="Delete" doc:id="d1195d92-f663-4e14-a3a4-c35293b4756a" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from employee_profile where emp_id= :id
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+   id: attributes.uriParams."emp-id"
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="2fbe40bf-7dbb-4e29-9281-46bdb0fc87bf" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="8719f88f-17ea-4f7f-ac02-68eab81e9e0d" message="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="69eb8482-21b5-48ac-be8f-645fdeca85d0" message="The record has been deleted"/>
+	</flow>
+	<flow name="update-record" doc:id="0b86eef0-c276-45cd-9875-e7cb9fd8b905" >
+		<db:update doc:name="Update" doc:id="3445e8d0-01fe-420f-bd65-1beec1347f63" config-ref="Database_Config">
+			<db:sql ><![CDATA[update employee_profile set 
+emp_name= :name, emp_skills= :skills where emp_id= :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	name: payload.emp_name,
+	skills: payload.emp_skills,
+	id: attributes.uriParams."emp-id"
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="ecd43740-eb7a-4d0d-a2c8-5724d621fe79" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="459ab945-c12b-4de0-bb6a-e49954753412" message="#[payload]"/>
+	</flow>
+	<flow name="select-particular-record" doc:id="cf632c32-3596-4be7-8b0e-524a42c33a5b" >
+		<db:select doc:name="Select" doc:id="cdd2bf08-0313-4438-82b8-8c0efe85c911" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from employee_profile where emp_id= :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: attributes.uriParams."emp-id"
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="d9a9643b-5d4b-4a53-95fb-23b537a90d6e">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e87b159a-9606-4ce0-88ff-d3b7ca8c0d1e" message="#[payload]"/>
+	</flow>
+</mule>

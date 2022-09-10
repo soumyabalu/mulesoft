@@ -1,0 +1,30 @@
+#%RAML 1.0 DataType
+type: object
+properties:
+  emp_name:
+    type: string
+    minLength: 2
+    maxLength: 30
+    required: true
+  emp_id:
+    type: integer
+    required: true
+  emp_skills:
+    type: string
+    required: true
+    minLength: 2
+    maxLength: 30
+  emp_address:
+    type: string
+    required: false
+    minLength: 2
+    maxLength: 30
+  dob:
+    type: date-only
+    example: "1990-12-27"   # dob should yr-m-dd
+    required: false
+  gender:
+    type: string
+    enum: ["M", "F"]
+    required: false
+

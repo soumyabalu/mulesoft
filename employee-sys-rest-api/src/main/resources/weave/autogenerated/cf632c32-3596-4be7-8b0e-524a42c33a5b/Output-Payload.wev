@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_cf632c32_3596_4be7_8b0e_524a42c33a5b_Output_Payload = {
+  gender?: "F" | "M", 
+  dob?: String, 
+  emp_name: String, 
+  emp_skills: String, 
+  emp_address?: String, 
+  emp_id: Number, 
+  _?: Any
+}
+

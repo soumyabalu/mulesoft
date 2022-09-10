@@ -1,0 +1,29 @@
+#%RAML 1.0
+title: hello-world-rest-api
+version: v1
+mediaType: [application/json, application/xml]
+protocols:
+  - HTTP
+/hello-world:
+  description: 'To get the message "Hello World"'
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              {
+                "status": 200,
+                "message": "success"
+              }
+      500:
+        body:
+          application/json:
+            example:
+              {
+                "status": 500,
+                "message": "Internal server error"
+              }
+          
+  
+

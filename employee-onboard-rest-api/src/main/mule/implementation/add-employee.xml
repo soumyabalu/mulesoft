@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="add-employeeFlow" doc:id="45b77e68-5ec8-4404-9daf-a2082b4344b3" >
+		<db:insert doc:name="Insert" doc:id="1405e2a5-5bdb-4884-9586-00971490ef57" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into employee_detail(emp_name, emp_id, emp_status) values(:name, :id, :status)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	name: payload.emp_name,
+	id: payload.emp_id,
+	status: payload.emp_status
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="74da73b9-6680-4c47-bf13-619cb2e63441" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="3c3c28fb-c62a-4725-8793-65aaf5533194" message="#[payload]"/>
+	</flow>
+</mule>

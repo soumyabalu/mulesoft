@@ -1,0 +1,149 @@
+#%RAML 1.0
+title: employee-onboard-rest-api
+version: v1
+description: this is REST API is designed for onboarding employees.
+/add-employee:
+  post:
+    body:
+      application/json:
+        example:
+          {
+            "emp_name": "Rahul",
+            "emp_id": 200,
+            "emp_status": "A"
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              {
+                "Status": 200,
+                "Message": "Success"
+              }
+      500:
+        body:
+          application/json:
+            example:
+              {
+                "Status": 500,
+                "Message": "Internal server error"
+              }
+/update-employee:       #update the status uding  id  
+  put:
+    body:
+      application/xml:
+        example:
+          <?xml version="1.0" encoding="UTF-8"?>
+          <emp>
+            <emp_name>Rahul</emp_name>
+            <emp_id>200</emp_id>
+            <emp_status>B</emp_status>
+          </emp>
+    responses:
+      200:
+        body:
+          application/xml:
+            example:
+               <?xml version="1.0" encoding="UTF-8"?>
+                    <response>
+                      <status>200</status>
+                      <message>Success</message>
+                    </response>
+      500:
+        body:
+          application/xml:
+            example:
+               <?xml version="1.0" encoding="UTF-8"?>
+                    <response>
+                      <status>500</status>
+                      <message>Internal server error</message>
+                    </response>
+/fetch-employee:
+  get:
+    description: To get the employee detail using id
+    queryParameters:
+      emp_id:
+        type: integer
+        required: true
+        example: 5678
+      emp_status:
+        type: string
+        required: true
+        example: "B"
+      emp_name:
+        type: string
+        required: true
+        example: "Ravi"
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              {
+                "emp_name": "Rahul",
+                "emp_id": 200,
+                "emp_status": "B"      
+                         }
+      404:
+        body:
+          application/json:
+            example:
+              {
+                "status": 404,
+                "message": "No employee found"
+              }
+      500:
+        body:
+          application/json:
+            example:
+               {
+                "status": 500,
+                "message": "Internal server error"
+              }
+/delete-employee/{emp-id}:
+  get:
+    description: delete an employee using id
+    responses:
+      200:
+        body:
+          application/json:
+            example: "The employee has been successfully deleted"
+            
+      404:
+        body:
+          application/json:
+            example:
+              {
+                "status": 404,
+                "message": "No employee found"
+              }
+      500:
+        body:
+          application/json:
+            example:
+               {
+                "status": 500,
+                "message": "Internal server error"
+              }
+      
+      
+
+
+          
+          
+          
+
+         
+      
+
+              
+            
+              
+
+            
+          
+          
+          
+ 
+

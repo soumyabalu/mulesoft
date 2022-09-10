@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="fetch-employeeFlow" doc:id="f328acfb-1322-4e83-94ab-145ee0fbae31" >
+		<logger level="INFO" doc:name="Logger" doc:id="fce42836-e5b2-485e-a023-3f0bf47b0898" message="satted fetch employee flow" />
+		<ee:transform doc:name="Transform Message" doc:id="40a06da1-7cf1-4f02-8555-81d0a919258a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  empid: 200,
+  empname: "Ravi",
+  status: "A"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

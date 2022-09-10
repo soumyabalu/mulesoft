@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1239d778-0ffa-4249-b854-a365f97113cc" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="31ed7df2-8efd-4735-9745-6dd59998f864" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<flow name="jms-variable-insert-demoFlow" doc:id="2add6816-33fc-4874-b67f-dcbc3e330fec" >
+		<http:listener doc:name="Listener" doc:id="c06e30f9-e443-4215-9828-f199f308219d" config-ref="HTTP_Listener_config" path="/publish-variable"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0eee881a-d461-4a21-b15b-c21d250e01ed" message="The message has arrived and the flow has started" category="start log"/>
+		<set-variable value="I am the client variable" doc:name="Set Variable" doc:id="4a6309e5-4497-4b18-9f16-01e447d91d98" variableName="clientvariable"/>
+		<jms:publish doc:name="Publish" doc:id="a138b438-3bf1-4aa6-90c9-2a66e4d1a2a5" config-ref="JMS_Config" destination="variable-access"/>
+		<logger level="INFO" doc:name="Logger" doc:id="29f5e613-b2a4-4b3a-a877-fcb06275b6cb" message="The message has been successfully published"/>
+		<jms:consume doc:name="Consume" doc:id="e8c0a097-d09d-4d60-b580-771f3da4aacd" config-ref="JMS_Config" destination="variable-access">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:consume>
+		<logger level="INFO" doc:name="Logger" doc:id="5595d706-d299-4bf3-92e1-0fa080f7c24e" message="The message has consumed"/>
+		<logger level="INFO" doc:name="Logger" doc:id="56fafbe2-9aa0-47b5-9bf7-8a8542426538" message="#[vars.clientvariable]"/>
+	</flow>
+	<flow name="jms-publish-variable-insert-demoFlow1" doc:id="44ed594b-d6fd-41d6-a564-fc9afd20a30e" >
+		<http:listener doc:name="Listener" doc:id="d61c2e30-40f4-4c94-8d9b-6a3e63be3f42" config-ref="HTTP_Listener_config" path="/demo"/>
+		<logger level="INFO" doc:name="Logger" doc:id="573f7593-0948-430e-8811-59bb609a00d0" message="The message has arrived and the flow has started" category="start log"/>
+		<set-variable value="I am the publish variable" doc:name="Set Variable" doc:id="75caad39-1419-47e1-baac-f2da8d33e849" variableName="publishvariable"/>
+		<jms:publish doc:name="Publish" doc:id="26b4795f-ee68-4ef5-bd38-ef93d39ec81a" config-ref="JMS_Config" destination="employee-details"/>
+		<logger level="INFO" doc:name="Logger" doc:id="45338917-515f-4397-9b50-829a4affd80d" message="The message has been published"/>
+		<flow-ref doc:name="Flow Reference" doc:id="6d1cc41e-1308-4c3b-ac16-198fbc770a03" name="consume-variable-flow"/>
+	</flow>
+	<flow name="consume-variable-flow" doc:id="ac12f063-9df4-4c39-a43d-b26bf75f4200" >
+		<logger level="INFO" doc:name="Logger" doc:id="121ee7e2-154d-473a-8d5b-ea7f7e974983" message="#[vars.publishvariable]" />
+		<jms:consume doc:name="Consume" doc:id="5d2ff301-b72c-444f-a546-b33640dd9e88" config-ref="JMS_Config" destination="employee-details"/>
+		<logger level="INFO" doc:name="Logger" doc:id="3f925590-dd45-4a47-9349-a292fbd60891" message="The message has consumed"/>
+	</flow>
+	<flow name="jms-variable-insert-demoFlow2" doc:id="0f34b2dc-fb4d-4be7-93cb-e22047e3f8cc" >
+		<http:listener doc:name="Listener" doc:id="b60d5f82-a698-4c3f-9e4e-1a3d3ef72c4f" config-ref="HTTP_Listener_config" path="/check"/>
+		<logger level="INFO" doc:name="Logger" doc:id="80ca1f96-7e3f-416b-80a5-ba8e47c4aba5" message="the message has arrived and the flow has started"/>
+		<set-variable value="i am a variable" doc:name="Set Variable" doc:id="da4599e1-d1e2-464a-966f-dd004b6fd5c7" variableName="variablename"/>
+		<jms:publish-consume doc:name="Publish consume" doc:id="2fa6ea69-4433-4fcd-9c0f-04b83a953218" config-ref="JMS_Config" destination="employee-details">
+			<jms:message >
+				<jms:reply-to destination="employee-details" />
+			</jms:message>
+			<jms:consume-configuration maximumWaitUnit="SECONDS" maximumWait="20"/>
+		</jms:publish-consume>
+		<logger level="INFO" doc:name="Logger" doc:id="0b599fb4-84c8-4896-a823-546199fcdf2a" message="The message has been published and consumed"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2dfd7386-3393-4c7c-b471-efe7fadb88d9" message="#[vars.variablename]"/>
+	</flow>
+	<flow name="variable-insert-demoFlow" doc:id="0ad9cc90-ad3f-482b-94c9-5596883379f9" initialState="stopped">
+		<logger level="INFO" doc:name="Logger" doc:id="3594f6f9-7b4c-4f0d-b1d5-0e57e265d1f6" message="The flow has started"/>
+		<jms:publish-consume doc:name="Publish consume" doc:id="2a489607-d24f-42dd-8af5-84646c741c7b" config-ref="JMS_Config" destination="employee-details"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4e459de7-2639-43ae-8908-0ab446ad0819" message="the message has consumed"/>
+		<logger level="INFO" doc:name="Logger" doc:id="599f7ca3-3ae3-4d4f-a062-c1676482b301" message="#[vars.variablename]"/>
+	</flow>
+</mule>

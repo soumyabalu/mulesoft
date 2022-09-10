@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="8c15dbc0-dbd4-446e-92b1-bd98e33955fc" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="admin" database="employees" />
+	</db:config>
+	<flow name="update-employeeFlow" doc:id="bf686385-adb5-4019-9b2d-b8f8f2697c4a" >
+		<db:update doc:name="Update" doc:id="82a5c141-026e-4060-b22d-32f9330e3e50" config-ref="Database_Config">
+			<db:sql ><![CDATA[update employee_detail set emp_status= :status where emp_id= :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: payload.emp.emp_id,
+	status: payload.emp.emp_status
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="61a03df3-aea4-4cb7-85f9-41598b656e35" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": "200",
+    "message": "Success"
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="43e89df2-f573-4953-8b36-34e967e08f5e" message="#[payload]"/>
+	</flow>
+</mule>

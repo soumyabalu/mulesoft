@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_eea90718_32f6_42d9_a4b3_edcdfa9ba89b_Output_Payload = Array<{|  emp_name: String,   emp_id: Number,   emp_skills: String|}>
+

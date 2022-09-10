@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c17864d6-349a-4faa-895e-b90bb0024e98" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="167f402b-68b1-4b7f-90f9-809ace00612a" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="759be9ef-d99b-4222-9da5-cfe4a21c332e" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="admin" database="employee_details" />
+	</db:config>
+	<flow name="jms-publish-insert-to-db-demoFlow" doc:id="20515fba-8779-4f80-905a-d2e9450b590a" >
+		<http:listener doc:name="Listener" doc:id="08d27e49-0c45-4dce-9ff6-d3aeda94421b" config-ref="HTTP_Listener_config" path="/publish"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8457259a-0f29-408e-8ce1-eeae2ccd146b" message="The message has arrived and the floe has started" category="start log"/>
+		<jms:publish doc:name="Publish" doc:id="f2f827b9-dd15-4e2e-9423-f6cc2a98d596" config-ref="JMS_Config" destination="employee-details"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6a527d23-bad8-4ad7-a516-6a2f90743ba7" message="The message has successfully published in the queue" />
+		<jms:consume doc:name="Consume" doc:id="560250b1-7d01-4c8b-b376-631a81d2c0dc" config-ref="JMS_Config" destination="employee-details"/>
+		<db:insert doc:name="Insert" doc:id="ef2f2c5e-f8c2-42ae-91a9-14965838b622" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into employee_profile(emp_name, emp_id, emp_skills) values(:name, :id, :skills)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	name: payload.emp_name,
+	id: payload.emp_id,
+	skills: payload.emp_skills
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="3a1cfc50-52a6-4e16-bee1-dde4f1013f65" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="c1c83ea8-b374-46ff-8939-fa3185302cd8" message="The message has been susscessfully inserted into db" category="end log"/>
+	</flow>
+</mule>

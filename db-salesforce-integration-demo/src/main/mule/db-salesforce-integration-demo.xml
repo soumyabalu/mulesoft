@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9c6b2145-0f38-41a0-b065-311e285ad1d0" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="6a9b26b7-6a93-4ef1-8f3d-3e21224cd576" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="admin" database="employee_details" />
+	</db:config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="b3d31567-43c4-42d9-924c-7b47fa0b0291" >
+		<salesforce:basic-connection username="mylearningsalesforce@gmail.com" password="WallBlue7" securityToken="gYZ0kw7fxf9GFvm5wDls0pgtw" url="https://login.salesforce.com/services/Soap/u/55.0"/>
+	</salesforce:sfdc-config>
+	<flow name="db-insert-demoFlow" doc:id="df051495-138b-4ef3-819c-104da4704700" >
+		<http:listener doc:name="Listener" doc:id="eff66d91-5e10-4d08-8b94-9071c7a1fc35" config-ref="HTTP_Listener_config" path="/test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4199ebf4-7b68-4013-953e-8fcaa456cc9f" message="The message has been arrived and the flow has created" category="start log"/>
+		<db:insert doc:name="Insert" doc:id="8c3ad4c5-7731-4279-b091-a1a116c33779" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into employee_profile(emp_name, emp_id, emp_skills) values(:name, :id, :skills)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	name: payload.emp_name,
+	id: payload.emp_id,
+	skills: payload.emp_skills
+	
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="b8767b80-1157-4447-89a1-889d6b1e4713" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="71d0a5a4-1d15-47d6-8a46-c5960e0827e8" message="The values has been successfully inserted into db"/>
+		<flow-ref doc:name="Flow Reference" doc:id="6e3fcbbc-7979-4f93-b4a2-1144d840bf91" name="db-salesforce-integration-demoFlow"/>
+	</flow>
+	<flow name="db-salesforce-integration-demoFlow" doc:id="eea90718-32f6-42d9-a4b3-edcdfa9ba89b" >
+		<db:select doc:name="Select" doc:id="f0280892-373d-4723-a37c-190eff034cc9" config-ref="Database_Config">
+			<db:sql ><![CDATA[select emp_name,emp_id, emp_skills from employee_profile ]]></db:sql>
+			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="56771857-0080-4a24-afec-2dffb5556bcc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	Name: payload01.emp_name,
+	AnnualRevenue: payload01.emp_id,
+	NumberOfEmployees: payload01.emp_id
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="Create" doc:id="811b07fd-65b0-4c36-b670-4df384416816" config-ref="Salesforce_Config" type="Account"/>
+		<ee:transform doc:name="Transform Message" doc:id="5f40bc01-c2b8-42bf-be1b-5815535fe2bf" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="33ff1fb7-59fc-4680-bf7a-034eeecbb26e" message="The flow has ended"/>
+	</flow>
+</mule>

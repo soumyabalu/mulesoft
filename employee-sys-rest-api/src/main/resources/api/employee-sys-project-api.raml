@@ -1,0 +1,91 @@
+#%RAML 1.0
+title: employee-sys-project-api
+version: v1
+protocols:
+  - HTTP
+mediaType:
+- application/json
+types:
+  bodyType: !include DataTypes/bodyDataType.raml       #Assigning the body datatype file to the parameter bodytype . we can use any name instead of parametername bodyType 
+securitySchemes:
+  basicAuth:
+    type: Basic Authentication
+    description: This authentication will be applied to the methods.
+traits:
+  client-id-required:
+    headers:
+      client-id:
+        type: string
+        required: true
+        description: This unique client id is required for this API call which will be generated from anypoint exchange.
+      client-secret:
+        type: string
+        required: true
+        description: This unique client secrete is required for this API call which will be generated from anypoint exchange.
+
+/employee-details:
+  get:
+    queryParameters:
+      emp_skills:
+        type: string
+        required: true
+    is: [client-id-required]    
+    responses:
+      200:
+        body:
+          application/json:
+            type: !include /DataTypes/bodyDataType.raml
+            example: !include /Example/sampleBody.raml
+
+
+  post:
+    securedBy:
+      - basicAuth
+    body:
+      application/json:
+        type: !include DataTypes/bodyDataType.raml
+        example: !include /Example/sampleBody.raml
+    responses:
+      200:
+        body:
+          application/json:
+             example:
+              {
+                "Status": 200,
+                "Message": "Success"
+          
+            }
+  /{emp-id}:            
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              type: !include /DataTypes/bodyDataType.raml
+              example: !include /Example/sampleBody.raml
+    put:
+      body:
+        application/json:
+          type: !include /DataTypes/bodyDataType.raml
+          example: !include /Example/sampleBody.raml
+      responses:
+        201:
+          body:
+            application/json:
+              example: " update/insert employee record has been performed"
+    delete:
+      responses:
+        200:
+          body:
+            application/json:
+              example: "Record has been successfully deleted"
+                
+          
+
+        
+                
+ 
+          
+          
+      
+    
